@@ -1,27 +1,47 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function TodoForm({ initialData = {}, onSubmit }) {
-  const [title, setTitle] = useState(initialData.title || "");
+export default function TodoForm({ initialData, onSubmit }) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [completed, setCompleted] = useState(initialData?.completed || false);
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (title.trim()) onSubmit({ ...initialData, title });
-  };
+    const newTodo = {
+      id: initialData?.id || Date.now(), // unique for local todos
+      title,
+      completed,
+      date: new Date().toLocaleDateString(),
+      isLocal: true, // mark local-created todos
+    };
+    onSubmit(newTodo);
+    router.push("/"); // redirect back
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-4 rounded-2xl border-none shadow-md space-y-4"
+    >
       <input
         type="text"
-        placeholder="Enter todo..."
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="border w-full p-2 rounded"
+        placeholder="Enter todo..."
+        className="w-full border-0 rounded-xl p-2"
+        required
       />
-      <button
-        type="submit"
-        className="bg-green-500 text-white px-4 py-2 rounded"
-      >
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={completed}
+          onChange={(e) => setCompleted(e.target.checked)}
+        />
+        Completed
+      </label>
+      <button className="w-full bg-blue-500 text-white font-semibold py-2 rounded-xl hover:bg-blue-600">
         Save
       </button>
     </form>

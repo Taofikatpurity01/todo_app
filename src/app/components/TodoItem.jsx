@@ -1,26 +1,48 @@
-"use client";
-import Link from "next/link";
+import { useState } from "react";
 
-export default function TodoItem({ todo, onDelete }) {
+export default function TodoItem({ todo, onDelete, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(todo.title);
+
+  function handleSave() {
+    if (!onUpdate) return; // safeguard
+    onUpdate({
+      ...todo,
+      title: text,
+    });
+    setIsEditing(false);
+  }
+
   return (
-    <div className="flex justify-between items-center bg-white shadow-md p-4 rounded-lg mb-3">
-      <Link href={`/todo/${todo.id}`} className="text-lg">
-        {todo.title}
-      </Link>
+    <div className="flex items-center justify-between p-2 shadow-md bg-[wheat] rounded-lg mb-2">
+      {isEditing ? (
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="border p-2 flex-1 mr-2"
+        />
+      ) : (
+        <span>{todo.title}</span>
+      )}
+
       <div className="flex gap-2">
-        <Link
-          href={`/todo/${todo.id}?edit=true`}
-          className="bg-blue-500 text-white px-3 py-1 rounded"
-        >
-          Edit
-        </Link>
-        <button
-          onClick={() => onDelete(todo.id)}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
+        {isEditing ? (
+          <button onClick={handleSave} className=" bg-green-500 text-white px-2 py-1 rounded-lg">
+            Save
+          </button>
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className=" bg-blue-600 text-white px-2 py-1 rounded-lg"
+          >
+            Edit
+          </button>
+        )}
+        <button onClick={onDelete} className="text-white bg-red-500 px-2 py-1 rounded-lg">
           Delete
         </button>
       </div>
     </div>
   );
 }
+
