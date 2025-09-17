@@ -1,9 +1,9 @@
 // app/todos/page.js
-import { getTodos } from "@/lib/api";
+import { fetchTodos } from "@/lib/api";
 import Link from "next/link";
 
 export default async function TodoListPage() {
-  const todos = await getTodos(); // Always fresh from server
+ const todos = await fetchTodos(); // Always fresh from server
 
   return (
     <main className="p-6">
